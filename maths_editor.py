@@ -15,11 +15,15 @@ class node():
             raise ValueError('node full')
 
 def tokeniser(equation):
+    bracketPairs = 0
     inNumber = False
     number = []
     length = len(equation)
     
     for c, char in enumerate(equation, 1):
+        if c == 1 and char != '(':
+            yield '('
+            bracketPairs+=1
         if char.isdigit():
             if not inNumber:
                 inNumber = True
@@ -33,11 +37,19 @@ def tokeniser(equation):
             yield char
         elif char == ' ':
             continue
+        elif char == '(':
+            yield '('
+            bracketPairs+=1
+        elif char == ')':
+            yield ')'
+            bracketPairs-=1
         else:
             yield char
         if c == length:
             if inNumber:
                 yield ''.join(number)
+            if bracketPairs > 0:
+                yield ')'
 
 for i in tokeniser(equation):
     print(i)
