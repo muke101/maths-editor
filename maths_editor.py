@@ -14,44 +14,52 @@ class node():
         else:
             raise ValueError('node full')
 
-def tokeniser(equation):
-    bracketPairs = 0
-    inNumber = False
-    number = []
-    length = len(equation)
-    
-    for c, char in enumerate(equation, 1):
-        if c == 1 and char != '(':
-            yield '('
-            bracketPairs+=1
-        if char.isdigit():
-            if not inNumber:
-                inNumber = True
-            number.append(char)
-        elif inNumber and not char.isdigit():
-            inNumber = False
-            yield ''.join(number)
-            number = []
-            if char.isalpha():
-                yield '*'
-            yield char
-        elif char == ' ':
-            continue
-        elif char == '(':
-            yield '('
-            bracketPairs+=1
-        elif char == ')':
-            yield ')'
-            bracketPairs-=1
-        else:
-            yield char
-        if c == length:
-            if inNumber:
-                yield ''.join(number)
-            if bracketPairs > 0:
-                yield ')'
+class tokeniser():
+    def __init__(self,equation):
+        self.equation = equation
+        self.bracketPairs = 0
+        self.length = len(equation)
+        self.inNumber = False
+        self.number = []
 
-for i in tokeniser(equation):
+    def getChar(self, char):
+        if  char == ' ':
+            return ''
+        elif char == '(':
+            self.bracketPairs+=1
+            return '('
+        elif char == ')':
+            self.bracketPairs-=1
+            return ')'
+        else:
+            return char
+
+    def tokens(self):
+        for c, char in enumerate(self.equation, 1):
+            if c == 1 and char != '(':
+                yield '('
+                self.bracketPairs+=1
+
+            char = self.getChar(char)
+            if char.isdigit():
+               if not self.inNumber:
+                   self.inNumber = True
+               self.number.append(char)
+            elif self.inNumber and not char.isdigit():
+                self.inNumber = False
+                yield ''.join(self.number)
+                self.number = []
+                if char.isalpha():
+                    yield '*'
+                yield char
+             
+            if c == self.length:
+                if self.inNumber:
+                    yield ''.join(self.number)
+                if self.bracketPairs > 0:
+                    yield ')'
+
+for i in tokeniser(equation).tokens():
     print(i)
  
 #construct tree with beautiful recurssion
