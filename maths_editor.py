@@ -28,6 +28,8 @@ def tokeniser(equation):
             inNumber = False
             yield ''.join(number)
             number = []
+            if char.isalpha():
+                yield '*'
             yield char
         elif char == ' ':
             continue
@@ -36,9 +38,9 @@ def tokeniser(equation):
         if c == length:
             if inNumber:
                 yield ''.join(number)
-            else:
-                yield char
 
+for i in tokeniser(equation):
+    print(i)
  
 #construct tree with beautiful recurssion
 
