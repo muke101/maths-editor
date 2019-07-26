@@ -1,4 +1,4 @@
-equation = "5x + 10"
+equation = "5x + 10 + 5"
 
 class node():
     def __init__(self, key):
@@ -40,7 +40,6 @@ class tokeniser():
                 yield '('
                 self.bracketPairs+=1
 
-            char = self.getChar(char)
             if char.isdigit():
                if not self.inNumber:
                    self.inNumber = True
@@ -51,7 +50,9 @@ class tokeniser():
                 self.number = []
                 if char.isalpha():
                     yield '*'
-                yield char
+                yield self.getChar(char)
+            else:
+                yield self.getChar(char)
              
             if c == self.length:
                 if self.inNumber:
