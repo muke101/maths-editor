@@ -3,16 +3,14 @@ equation = "5x + 10 - 5"
 
 class tokeniser():
     def __init__(self,equation):
-        self.equation = equation
+        self.equation = equation.replace(' ', '')
         self.bracketPairs = 0
-        self.length = len(equation)
+        self.length = len(self.equation)
         self.inNumber = False
         self.number = []
 
     def getChar(self, char): #helper function to contain all the special case characters that need to alter counters etc
-        if  char == ' ':
-            return ''
-        elif char == '(':
+        if char == '(':
             self.bracketPairs+=1
             return '('
         elif char == ')':
@@ -41,7 +39,7 @@ class tokeniser():
             else:
                 yield self.getChar(char)
              
-            if c == self.length: #I wish python used null terminators..
+            if c == self.length: #I wish python had null terminators..
                 if self.inNumber:
                     yield ''.join(self.number)
                 if self.bracketPairs > 0:
@@ -68,6 +66,8 @@ def infixToPostFix(equation):
     postFix = []
     stack = operandStack()
     for char in tokeniser(equation).tokens():
+        print('',end='')
+
         if char.isdigit() or char.isalpha(): #is operand
                postFix.append(char)
         elif stack.isEmpty() or stack.peek() == '(' or precedence[stack.peek()] < precedence[char]:
@@ -75,7 +75,7 @@ def infixToPostFix(equation):
         elif stack.peek() != '(' and precedence[stack.peek()] > precedece[char]:
             op = stack.pop()
             postFix.append(op)
-            while not stack.isEmpty() and precedence[op] => precedence[char]:
+            while not stack.isEmpty() and precedence[op] >= precedence[char]:
                 op = stack.pop()
                 if op == '(':
                     stack.push(char)
@@ -96,6 +96,7 @@ def infixToPostFix(equation):
     while not stack.isEmpty():
         postFix.append(stack.pop)
 
+print(infixtoPostFix(equation))
 
 class node():
     def __init__(self, key):
