@@ -47,13 +47,13 @@ class operandStack():
         self.stack = []
 
     def isEmpty(self):
-        return len(self.stack) == 0
+        return True if len(self.stack) == 0 else False
 
     def push(self, op):
         self.stack.append(op)
 
     def pop(self):
-        return self.stack.pop() if self.isEmpty() else None 
+        return self.stack.pop() if not self.isEmpty() else None 
 
     def peek(self):
         return self.stack[-1]
@@ -63,7 +63,6 @@ def infixToPostFix(equation):
     postFix = []
     stack = operandStack()
     for char in tokeniser(equation).tokens():
-        print('',end='')
 
         if char.isdigit() or char.isalpha(): #is operand
                postFix.append(char)
@@ -91,7 +90,9 @@ def infixToPostFix(equation):
                 postFix.append(op)
             stack.pop()
     while not stack.isEmpty():
-        postFix.append(stack.pop)
+        postFix.append(stack.pop())
+
+    return postFix
 
 print(infixToPostFix(equation))
 
