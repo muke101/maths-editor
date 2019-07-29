@@ -21,9 +21,6 @@ class tokeniser():
 
     def tokens(self):
         for c, char in enumerate(self.equation, 1):
-            if c == 1 and char != '(':
-                yield '('
-                self.bracketPairs+=1
 
             if char.isdigit():
                if not self.inNumber:
@@ -72,7 +69,7 @@ def infixToPostFix(equation):
                postFix.append(char)
         elif stack.isEmpty() or stack.peek() == '(' or precedence[stack.peek()] < precedence[char]:
             stack.push(char) 
-        elif stack.peek() != '(' and precedence[stack.peek()] > precedece[char]:
+        elif stack.peek() != '(' and precedence[stack.peek()] > precedence[char]:
             op = stack.pop()
             postFix.append(op)
             while not stack.isEmpty() and precedence[op] >= precedence[char]:
@@ -96,7 +93,8 @@ def infixToPostFix(equation):
     while not stack.isEmpty():
         postFix.append(stack.pop)
 
-print(infixtoPostFix(equation))
+print(infixToPostFix(equation))
+
 
 class node():
     def __init__(self, key):
