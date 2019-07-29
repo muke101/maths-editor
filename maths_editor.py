@@ -1,18 +1,5 @@
-equation = "5x + 10 + 5"
+equation = "5x + 10 - 5"
 
-class node():
-    def __init__(self, key):
-        self.key = key
-        self.left = None
-        self.right = None
-
-    def insert(self, key):
-        if self.left == None:
-            self.left = key
-        elif self.right == None:
-            self.right = key
-        else:
-            raise ValueError('node full')
 
 class tokeniser():
     def __init__(self,equation):
@@ -22,7 +9,7 @@ class tokeniser():
         self.inNumber = False
         self.number = []
 
-    def getChar(self, char):
+    def getChar(self, char): #helper function to contain all the special case characters that need to alter counters etc
         if  char == ' ':
             return ''
         elif char == '(':
@@ -46,22 +33,49 @@ class tokeniser():
                self.number.append(char)
             elif self.inNumber and not char.isdigit():
                 self.inNumber = False
-                yield ''.join(self.number)
+                yield ''.join(self.number) #yield full number when first non-digit char is seen
                 self.number = []
-                if char.isalpha():
+                if char.isalpha(): #include implicit multiplication
                     yield '*'
                 yield self.getChar(char)
             else:
                 yield self.getChar(char)
              
-            if c == self.length:
+            if c == self.length: #I wish python used null terminators..
                 if self.inNumber:
                     yield ''.join(self.number)
                 if self.bracketPairs > 0:
                     yield ')'
 
-for i in tokeniser(equation).tokens():
-    print(i)
- 
-#construct tree with beautiful recurssion
+class operandStack():
+    def __init__(self):
+        self.precedence = {'-': 1, '+': 2, '*': 3, '/': 4, '^': 5}
+        self.stack = []
 
+    def isEmpty(self):
+        return len(self.stack) == 0
+
+    def push(self, op):
+        self.stack.append(op)
+
+    def pop(self):
+        return self.stack.pop() if self.isEmpty() else None 
+
+    def peek(self):
+        return self.stack[-1]
+ 
+
+
+class node():
+    def __init__(self, key):
+        self.key = key
+        self.left = None
+        self.right = None
+
+    def insert(self, key):
+        if self.left == None:
+            self.left = key
+        elif self.right == None:
+            self.right = key
+        else:
+            raise ValueError('node full')
