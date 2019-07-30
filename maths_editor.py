@@ -1,4 +1,4 @@
-equation = "5x + 10 - 5"
+equation = "a+b*(c^d-e)^(f+g*h)-i"
 
 
 class tokeniser():
@@ -59,42 +59,37 @@ class operandStack():
         return self.stack[-1]
 
 def infixToPostFix(equation): 
-    precedence = {'-': 1, '+': 2, '*': 3, '/': 4, '^': 5}
+    precedence = {'-': 1, '+': 1, '*': 2, '/': 2, '^': 3} #I don't understand why it's this and not BIDMAS but it works 
     postFix = []
     stack = operandStack()
     for char in tokeniser(equation).tokens():
-
         if char.isdigit() or char.isalpha(): #is operand
                postFix.append(char)
-        elif stack.isEmpty() or stack.peek() == '(' or precedence[stack.peek()] < precedence[char]:
-            stack.push(char) 
-        elif stack.peek() != '(' and precedence[stack.peek()] > precedence[char]:
-            op = stack.pop()
-            postFix.append(op)
-            while not stack.isEmpty() and precedence[op] >= precedence[char]:
-                op = stack.pop()
-                if op == '(':
-                    stack.push(char)
-                    break
-                else:
-                    postFix.append(op)
-            if op != '(':
-                stack.push(char)  
         elif char == '(':
             stack.push(char)
         elif char == ')':
             op = stack.pop()
             postFix.append(op)
-            while op != '(':
+            while  stack.peek() != '(':
                 op = stack.pop()
                 postFix.append(op)
             stack.pop()
+        elif stack.isEmpty() or stack.peek() == '(' or precedence[stack.peek()] < precedence[char]:
+            stack.push(char) 
+        elif stack.peek() != '(' and precedence[stack.peek()] >= precedence[char]:
+            op = stack.pop()
+            postFix.append(op)
+            while not stack.isEmpty() and stack.peek() != '(' and  precedence[op] >= precedence[char]: 
+                op = stack.pop()
+                postFix.append(op)
+            if op != '(':
+                stack.push(char)  
     while not stack.isEmpty():
         postFix.append(stack.pop())
 
     return postFix
 
-print(infixToPostFix(equation))
+print(''.join(infixToPostFix(equation)))
 
 
 class node():
