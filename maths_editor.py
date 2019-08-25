@@ -16,16 +16,14 @@ class node():
 
 class tokeniser():
     def __init__(self,equation):
-        self.equation = equation
+        self.equation = equation.replace(' ','')
         self.bracketPairs = 0
-        self.length = len(equation)
+        self.length = len(self.equation)
         self.inNumber = False
         self.number = []
 
     def getChar(self, char):
-        if  char == ' ':
-            return ''
-        elif char == '(':
+        if char == '(':
             self.bracketPairs+=1
             return '('
         elif char == ')':
@@ -36,9 +34,6 @@ class tokeniser():
 
     def tokens(self):
         for c, char in enumerate(self.equation, 1):
-            if c == 1 and char != '(':
-                yield '('
-                self.bracketPairs+=1
 
             if char.isdigit():
                if not self.inNumber:
