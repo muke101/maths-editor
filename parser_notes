@@ -1,0 +1,5 @@
+push operands to stack
+if operator, pop operands and create node object, push node to stack
+if node objects, pop those and create new node as parent of those, which is pushed
+if two nodes, parent of both of them
+evntually all nodes should be linked into a proper parse tree
