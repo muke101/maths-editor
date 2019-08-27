@@ -1,6 +1,3 @@
-equation = "a+b*(c^d-e)^(f+g*h)-i"
-
-
 class Node():
     def __init__(self, key):
         self.key = key
@@ -109,11 +106,38 @@ def treeBuilder(postFixEquation):
             terms = [stack.pop(), stack.pop()]
 
             for c, term in enumerate(terms): #create node instances for lone numbers/variables
-                if type(term) != type:
+                if type(term) != Node:
                     nodeChild = Node(term)
                     terms[c] = nodeChild 
                     
             node.right = terms[0] #term being acted on goes on the right
             node.left = terms[1]
             stack.push(node)
-        
+
+    return stack.pop() #stack should be collasped down to one root node
+
+def printNode(node):
+
+    print(node.key)
+
+    if node.left != None:
+        printNode(node.left)
+    if node.right != None:
+        printNode(node.right)
+
+def traverse(rootnode):
+  thislevel = [rootnode]
+  while thislevel:
+    nextlevel = list()
+    for n in thislevel:
+      print (n.key)
+      if n.left: nextlevel.append(n.left)
+      if n.right: nextlevel.append(n.right)
+    print()
+    thislevel = nextlevel
+
+if __name__ == '__main__':
+    equation = "a+b*(c^d-e)^(f+g*h)-i"
+    postFixEquation = infixToPostFix(equation)
+    tree = treeBuilder(postFixEquation)
+    traverse(tree)
