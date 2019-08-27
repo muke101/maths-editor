@@ -116,16 +116,7 @@ def treeBuilder(postFixEquation):
 
     return stack.pop() #stack should be collasped down to one root node
 
-def printNode(node):
-
-    print(node.key)
-
-    if node.left != None:
-        printNode(node.left)
-    if node.right != None:
-        printNode(node.right)
-
-def traverse(rootnode):
+def printTree(rootnode):
   thislevel = [rootnode]
   while thislevel:
     nextlevel = list()
@@ -140,4 +131,4 @@ if __name__ == '__main__':
     equation = "a+b*(c^d-e)^(f+g*h)-i"
     postFixEquation = infixToPostFix(equation)
     tree = treeBuilder(postFixEquation)
-    traverse(tree)
+    printTree(tree)
