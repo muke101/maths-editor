@@ -29,9 +29,9 @@ Evaluation
 The evaluation is done through type checking. Every element broken down to it's single state (ie the leaves of the tree)
 has it's own type, can be either variable (x is a unique type, y is a unique type) or a number (10 is the same type as 5)
 when evaluating expressions, either regular decimal operations take place (10/5) or objects must be used to determine if and how
-different variable types can combine. Encountering y*x would return a new type yx. If this were then added with xy, type checks would
+different variable types can combine. Encountering yx would return a new type yx. If this were then added with xy, type checks would
 yield that this can legally go to 2xy, which is still the same type but now with a modified coefficient (which doesn't change it's fundemental type).
-xy*xy however would yield xy^2, which is a new type. 
+xyxy however would yield xy^2, which is a new type. 
 
 Types
 there exist types and metatypes. Types are class objects that hold basic information about the single term - variable (x, y, xy), coeffcient and power.
@@ -44,5 +44,5 @@ term indivisually. As this transverses back up the parse tree it returns the res
 the single term 2x^2 is compared against, and is essencially just (2x+10). The indivisual terms exist as objects themselves, and they are refernced to within the metatype object.
 So, the metatype is iterated over for every term that it holds and compared indivisually against 2x^2. In this case, neither can be cleanly added, and we already know they can't be added to eachother
 as they were already compared against to create the metatype. The metatype is for the purposes of the tree one thing, but it can hold as many indivisual types that have previously been evaluted
-within it. Metatypes can as such be compared to other metatypes, and I guess the only way to do that would be with n*m complexity, as every term would have to be compared to every other term in the opposing metatype.
+within it. Metatypes can as such be compared to other metatypes, and I guess the only way to do that would be with n by m complexity, as every term would have to be compared to every other term in the opposing metatype.
 
