@@ -156,6 +156,23 @@ def printTree(root):
     print()
     thislevel = nextlevel
 
+class evaluator:
+    def __init__(self):
+        self.precedence = {'-': 1, '+': 1, '*': 2, '/': 2, '^': 3}
+
+    def findBaseLeaves(self, root):
+            
+    
+    def evaluate(self, baseLeaves):
+
+    def add(self, rightTerm, leftTerm):
+
+    def multiply(self, rightTerm, leftTerm):
+
+    def divide(self, rightTerm, leftTerm):
+
+    def raise(self, rightTerm, leftTerm):
+
 if __name__ == '__main__':
     equation = "a+b*(c^d-e)^(f+g*h)-i"
     postFixEquation = infixToPostFix(equation)
