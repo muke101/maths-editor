@@ -20,6 +20,32 @@ class operandStack():
     def peek(self):
         return self.stack[-1]
 
+class Term():
+    def __init__(self, token):
+        self.expodent = 1
+        if token.isdigit():
+            self.coeff = int(token)
+            self.variable = None
+        else:
+            self.coeff = 1
+            self.variable = token
+    
+    def printTerm(self):
+        expodentStr = ''
+        coeffStr = ''
+        variableStr = ''
+
+        if self.expodent != 1:
+            expodentStr = '^'+str(self.expodent)
+        if self.coeff != 1:
+            coeffStr = str(self.coeff)
+        if self.variable != None:
+            variableStr = self.variable
+
+        if expodentStr == '' and coeffStr == '' and variableStr == '':
+            return '1'
+        else:
+            return expodentStr+coeffStr+variableStr
 
 class tokeniser():
     def __init__(self,equation):
@@ -98,7 +124,7 @@ def treeBuilder(postFixEquation):
 
     for token in postFixEquation:
         if token.isdigit() or token.isalpha():
-            stack.push(token)
+            stack.push(Term(token))
 
         else:
             node = Node(token)
@@ -116,12 +142,15 @@ def treeBuilder(postFixEquation):
 
     return stack.pop() #stack should be collasped down to one root node
 
-def printTree(rootnode):
-  thislevel = [rootnode]
+def printTree(root):
+  thislevel = [root]
   while thislevel:
     nextlevel = list()
     for n in thislevel:
-      print (n.key)
+      if type(n.key) != Term:
+        print(n.key)
+      else:
+        print (n.key.printTerm())
       if n.left: nextlevel.append(n.left)
       if n.right: nextlevel.append(n.right)
     print()
