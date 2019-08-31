@@ -179,7 +179,7 @@ class evaluator:
             baseLeaves.append(node)
         elif node.hasChildren():
             for child in [node.left, node.right]:
-                self.findBaseLeaves(child, baseLeaves)
+                self.findBaseLeaves(node, baseLeaves)
 
         return baseLeaves
     
