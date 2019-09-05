@@ -1,4 +1,4 @@
-class Node():
+class Node:
     def __init__(self, key):
         self.key = key
         self.parent = None
@@ -18,7 +18,7 @@ class Node():
             return True
         return False
 
-class operandStack():
+class operandStack:
     def __init__(self):
         self.stack = []
 
@@ -34,34 +34,45 @@ class operandStack():
     def peek(self):
         return self.stack[-1]
 
-class Term():
+class Term:
     def __init__(self, token):
-        self.expodent = 1
+        self.exp = 1
         if token.isdigit():
             self.coeff = int(token)
-            self.variable = None
+            self.var = None
         else:
             self.coeff = 1
-            self.variable = token
+            self.var = token
     
     def printTerm(self):
         expodentStr = ''
         coeffStr = ''
         variableStr = ''
 
-        if self.expodent != 1:
-            expodentStr = '^'+str(self.expodent)
+        if self.expo != 1:
+            expodentStr = '^'+str(self.expo)
         if self.coeff != 1:
             coeffStr = str(self.coeff)
-        if self.variable != None:
-            variableStr = self.variable
+        if self.var != None:
+            variableStr = self.var
 
         if expodentStr == '' and coeffStr == '' and variableStr == '':
             return '1'
         else:
             return expodentStr+coeffStr+variableStr
 
-class tokeniser():
+class conTerm:
+    def __init__(self, term):
+        self.numerator = term 
+        self.denominator = 1
+        self.termList = []
+        self.operatorList = []
+
+    def addTerm(self, term, operator):
+       self.termList.append(term)
+       self.operatorList.append(operator)
+
+class tokeniser:
     def __init__(self,equation):
         self.equation = equation.replace(' ', '')
         self.bracketPairs = 0
@@ -176,7 +187,7 @@ class evaluator:
         self.baseLeaves = []
         self.findBaseLeaves(root)
         test = [[node.parent.key for node in children] for children in self.baseLeaves]
-        self.evaluate()
+        self.traverse()
 
     def findBaseLeaves(self, node):
         if node.hasBaseLeaves():
@@ -186,20 +197,55 @@ class evaluator:
             for child in [node.left, node.right]:
                 self.findBaseLeaves(child)
     
-    def evaluate(self):
+    def traverse(self):
         for children in self.baseLeaves:
-            operation = children[0].parent.key
-            print(operation)
+            left = children[0]
+            right = children[1]
+            parent = self.evaluate(left, right)
 
-    #def add(self, rightTerm, leftTerm):
+            parent = parent.parent
 
-    #def substract(self, rightTerm, leftTerm):
+            while parent.hasBaseLeaves():
+                parent = self.evaluate(parent.left, parent.right)
+                if parent.parent is None:
+                    return parent
+                parent = parent.parent
 
-    #def multiply(self, rightTerm, leftTerm):
+    def evaluate(self, left, right):
 
-    #def divide(self, rightTerm, leftTerm):
+        parent = left.parent
+        operation = parent.key
 
-    #def raise(self, rightTerm, leftTerm):
+        if operation == '+':
+            parent.key = self.add(left.key, right.key)
+        elif operation == '-':
+            parent.key = self.subtract(left.key, right.key)
+        elif operation == '*':
+            parent.key = self.multiply(left.key, right.key)
+        elif operation == '/':
+            parent.key = self.divide(left.key, right.key)
+        elif operation == '^':
+            parent.key = self.raiseTo(left.key, right.key)
+                                                                               
+        parent.left = None
+        parent.right = None
+
+        return parent
+
+    def add(self, leftTerm, rightTerm):
+        return '+'
+
+    def subtract(self, leftTerm, rightTerm):
+        return '-'
+
+    def multiply(self, leftTerm, rightTerm):
+            
+
+    def divide(self, leftTerm, rightTerm):
+        return '/'
+
+    def raiseTo(self, leftTerm, rightTerm):
+        return '^'
 
 if __name__ == '__main__':
     equation = "a+b*(c^d-e)^(f+g*h)-i"
