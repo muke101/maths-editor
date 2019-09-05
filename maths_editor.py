@@ -1,6 +1,7 @@
 class Node():
     def __init__(self, key):
         self.key = key
+        self.parent = None
         self.left = None
         self.right = None
 
@@ -146,9 +147,9 @@ def treeBuilder(postFixEquation):
 
             for c, term in enumerate(terms): #create node instances for lone numbers/variables
                 if type(term) != Node:
-                    nodeChild = Node(term)
-                    terms[c] = nodeChild 
-                    
+                    terms[c] = Node(term) 
+                terms[c].parent = node
+
             node.right = terms[0] #term being acted on goes on the right
             node.left = terms[1]
             stack.push(node)
@@ -174,7 +175,8 @@ class evaluator:
         self.precedence = {'-': 1, '+': 1, '*': 2, '/': 2, '^': 3}
         self.baseLeaves = []
         self.findBaseLeaves(root)
-        print([[node.key.printTerm() for node in children] for children in self.baseLeaves])
+        test = [[node.parent.key for node in children] for children in self.baseLeaves]
+        print(test)
 
     def findBaseLeaves(self, node):
         if node.hasBaseLeaves():
