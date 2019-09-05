@@ -176,7 +176,7 @@ class evaluator:
         self.baseLeaves = []
         self.findBaseLeaves(root)
         test = [[node.parent.key for node in children] for children in self.baseLeaves]
-        print(test)
+        self.evaluate()
 
     def findBaseLeaves(self, node):
         if node.hasBaseLeaves():
@@ -186,9 +186,14 @@ class evaluator:
             for child in [node.left, node.right]:
                 self.findBaseLeaves(child)
     
-    #def evaluate(self, baseLeaves):
+    def evaluate(self):
+        for children in self.baseLeaves:
+            operation = children[0].parent.key
+            print(operation)
 
     #def add(self, rightTerm, leftTerm):
+
+    #def substract(self, rightTerm, leftTerm):
 
     #def multiply(self, rightTerm, leftTerm):
 
