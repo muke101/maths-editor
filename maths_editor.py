@@ -12,10 +12,10 @@ class Node():
     def hasBaseLeaves(self):
         if self.hasChildren():
             for child in [self.left, self.right]:
-                if child.left != None or child.right != None:
+                if child.hasChildren():
                     return False
-        else:
-            return False
+            return True
+        return False
 
 class operandStack():
     def __init__(self):
@@ -172,16 +172,17 @@ def printTree(root):
 class evaluator:
     def __init__(self, root):
         self.precedence = {'-': 1, '+': 1, '*': 2, '/': 2, '^': 3}
-        print(self.findBaseLeaves(root, []))
+        self.baseLeaves = []
+        self.findBaseLeaves(root)
+        print([[node.key.printTerm() for node in children] for children in self.baseLeaves])
 
-    def findBaseLeaves(self, node, baseLeaves):
+    def findBaseLeaves(self, node):
         if node.hasBaseLeaves():
-            baseLeaves.append(node)
+            self.baseLeaves.append([node.left, node.right])
+
         elif node.hasChildren():
             for child in [node.left, node.right]:
-                self.findBaseLeaves(child, baseLeaves)
-
-        return baseLeaves
+                self.findBaseLeaves(child)
     
     #def evaluate(self, baseLeaves):
 
@@ -197,5 +198,5 @@ if __name__ == '__main__':
     equation = "a+b*(c^d-e)^(f+g*h)-i"
     postFixEquation = infixToPostFix(equation)
     tree = treeBuilder(postFixEquation)
-    printTree(tree)
+    #printTree(tree)
     evaluator(tree)
