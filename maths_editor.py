@@ -64,13 +64,12 @@ class Term:
 class conTerm:
     def __init__(self, term):
         self.numerator = term 
-        self.denominator = 1
-        self.termList = []
-        self.operatorList = []
+        self.expodent = 1
+        self.denominator = 1 #this could be a potentially procarious choice. I'm hoping that not including division and powers in the expression list but rather as seperate variables will make simplification of term combining easier (ie, combining two terms that share common demoniators) as parsing the expression list won't be required. It feels like one of those things that'll come back to bite later down the line though, or at the very least not straightforward.
+        self.terms = [term]
 
     def addTerm(self, term, operator):
-       self.termList.append(term)
-       self.operatorList.append(operator)
+        self.terms.append(term)
 
 class tokeniser:
     def __init__(self,equation):
@@ -239,6 +238,42 @@ class evaluator:
         return '-'
 
     def multiply(self, leftTerm, rightTerm):
+        if leftTerm.equals(rightTerm):
+            leftTerm.expodent+=1
+            return leftTerm
+        if leftTerm.denominator.equals(rightTerm.numerator):
+            leftTerm.denominator = 1
+            if rightTerm.denominator != 1:
+                return self.divide(leftTerm, rightTerm.denominator)
+            else:
+                return leftTerm
+        if leftTerm.numerator.equals(rightTerm.denominator):
+            leftTerm.numerator = 1
+            if rightTerm.numerator != 1:
+                return self.divide(rightTerm.numerator, leftTerm)
+            else:
+                return leftTerm
+        
+        results = []
+        if type(rightTerm) == conTerm:
+            for term in rightTerm.terms:
+                results.append(self.multiply(leftTerm, term))
+            return reduce(self.add, results)
+        elif type(leftTerm) == conTerm:
+            for term in leftTerm.terms:
+                results.append(self.multiply(term, rightTerm))
+            return reduce(self.add, results)
+        else:
+            if leftTerm.var == rightTerm.var:
+                leftTerm.coeff *= rightTerm.coeff
+                leftTerm.exp += rightTerm.exp
+                return leftTerm
+            else:
+                leftTerm.coeff *= rightTerm.coeff
+                leftTerm.var += rightTerm.var
+                
+            
+            
             
 
     def divide(self, leftTerm, rightTerm):
