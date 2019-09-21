@@ -1,7 +1,9 @@
 # maths editor
 
 # overview:
-A terminal based editor using ncurses for mathematical equations that exists to make writing and operating on maths as easy on the keyboard as it is on paper.
+I've always found it frustrating that I chose one of the few subjects at university that still require a pen and paper (that is, physics), while everyone else gets to use laptops, so I've decided to try and solve the problem of writing and handling mathematical expressions being much harder on a keyboard than on paper with this program.
+
+This is a terminal based editor using ncurses for mathematical equations that exists to make writing and operating on maths as easy on the keyboard as it is on paper.
 Type up your equations (with keybinds to make it easier) and then use another set of keybinds in a different mode (not unlike vim) to maniuplate 
 the equation in real time, keeping a log of previous changes you can jump between. Not intended to solve equations like wolframalpha, you still
 do all the working, but now you can do this working on a terminal, instead of with paper and pen.
