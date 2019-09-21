@@ -10,7 +10,7 @@ class Node:
             return False
         return True
 
-    def hasBaseLeaves(self):
+    def hasBaseLeaves(self): #a node with 'base leaves' as I'm referring to them is simply a node who's children are both leaves. This is required to know where to begin with evaluation.
         if self.hasChildren():
             for child in [self.left, self.right]:
                 if child.hasChildren():
