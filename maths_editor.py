@@ -1,3 +1,5 @@
+from sympy import *
+
 class Node:
     def __init__(self, key):
         self.key = key
@@ -147,22 +149,23 @@ def treeBuilder(postFixEquation):
     stack = operandStack()
 
     for token in postFixEquation:
-        if token.isdigit() or token.isalpha():
-            stack.push(Term(token))
+        if token.isdigit():
+            stack.push(Node(token))
+
+        elif token.isalpha():
+            stack.push(Node(symbols(token)))
 
         else:
-            node = Node(token)
+            parent = Node(token)
             
             terms = [stack.pop(), stack.pop()]
 
             for c, term in enumerate(terms): #create node instances for lone numbers/variables
-                if type(term) != Node:
-                    terms[c] = Node(term) 
-                terms[c].parent = node
+                terms[c].parent = parent
 
-            node.right = terms[0] #term being acted on goes on the right
-            node.left = terms[1]
-            stack.push(node)
+            parent.right = terms[0] #term being acted on goes on the right
+            parent.left = terms[1]
+            stack.push(parent)
 
     return stack.pop() #stack should be collasped down to one root node
 
@@ -185,7 +188,6 @@ class evaluator:
         self.precedence = {'-': 1, '+': 1, '*': 2, '/': 2, '^': 3}
         self.baseLeaves = []
         self.findBaseLeaves(root)
-        test = [[node.parent.key for node in children] for children in self.baseLeaves]
         self.traverse()
 
     def findBaseLeaves(self, node):
@@ -231,60 +233,24 @@ class evaluator:
 
         return parent
 
-    def add(self, leftTerm, rightTerm):
-        return '+'
+    def add(self, left, right):
+        return left + right 
 
-    def subtract(self, leftTerm, rightTerm):
-        return '-'
+    def subtract(self, left, right):
+        return self.add(left, -1*right)
 
-    def multiply(self, leftTerm, rightTerm):
-        if leftTerm.equals(rightTerm):
-            leftTerm.expodent+=1
-            return leftTerm
-        if leftTerm.denominator.equals(rightTerm.numerator):
-            leftTerm.denominator = 1
-            if rightTerm.denominator != 1:
-                return self.divide(leftTerm, rightTerm.denominator)
-            else:
-                return leftTerm
-        if leftTerm.numerator.equals(rightTerm.denominator):
-            leftTerm.numerator = 1
-            if rightTerm.numerator != 1:
-                return self.divide(rightTerm.numerator, leftTerm)
-            else:
-                return leftTerm
-        
-        results = []
-        if type(rightTerm) == conTerm:
-            for term in rightTerm.terms:
-                results.append(self.multiply(leftTerm, term))
-            return reduce(self.add, results)
-        elif type(leftTerm) == conTerm:
-            for term in leftTerm.terms:
-                results.append(self.multiply(term, rightTerm))
-            return reduce(self.add, results)
-        else:
-            if leftTerm.var == rightTerm.var:
-                leftTerm.coeff *= rightTerm.coeff
-                leftTerm.exp += rightTerm.exp
-                return leftTerm
-            else:
-                leftTerm.coeff *= rightTerm.coeff
-                leftTerm.var += rightTerm.var
-                
-            
-            
-            
+    def multiply(self, left, right):
+        return left * right
 
-    def divide(self, leftTerm, rightTerm):
-        return '/'
+    def divide(self, left, right):
+        return self.multiply(left, self.raiseTo(right, -1))
 
-    def raiseTo(self, leftTerm, rightTerm):
-        return '^'
+    def raiseTo(self, left, right):
+        return left**right
 
 if __name__ == '__main__':
     equation = "a+b*(c^d-e)^(f+g*h)-i"
     postFixEquation = infixToPostFix(equation)
     tree = treeBuilder(postFixEquation)
-    #printTree(tree)
     evaluator(tree)
+    print(tree.key)
