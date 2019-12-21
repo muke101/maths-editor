@@ -1,0 +1,7 @@
+[info] Packaging /home/muke/Programming/maths_editor/Scala/maths_editor/src/main/scala/target/scala-2.10/scala_2.10-0.1-SNAPSHOT.jar ...
+[debug] Input file mappings:
+[debug] 	Main.class
+[debug] 	  /home/muke/Programming/maths_editor/Scala/maths_editor/src/main/scala/target/scala-2.10/classes/Main.class
+[debug] 	Main$.class
+[debug] 	  /home/muke/Programming/maths_editor/Scala/maths_editor/src/main/scala/target/scala-2.10/classes/Main$.class
+[info] Done packaging.

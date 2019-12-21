@@ -20,7 +20,7 @@ class Node:
             return True
         return False
 
-class operandStack:
+class stack:
     def __init__(self):
         self.stack = []
 
@@ -36,58 +36,24 @@ class operandStack:
     def peek(self):
         return self.stack[-1]
 
-class Term:
-    def __init__(self, token):
-        self.exp = 1
-        if token.isdigit():
-            self.coeff = int(token)
-            self.var = None
-        else:
-            self.coeff = 1
-            self.var = token
-    
-    def printTerm(self):
-        expodentStr = ''
-        coeffStr = ''
-        variableStr = ''
-
-        if self.expo != 1:
-            expodentStr = '^'+str(self.expo)
-        if self.coeff != 1:
-            coeffStr = str(self.coeff)
-        if self.var != None:
-            variableStr = self.var
-
-        if expodentStr == '' and coeffStr == '' and variableStr == '':
-            return '1'
-        else:
-            return expodentStr+coeffStr+variableStr
-
-class conTerm:
-    def __init__(self, term):
-        self.numerator = term 
-        self.expodent = 1
-        self.denominator = 1 #this could be a potentially procarious choice. I'm hoping that not including division and powers in the expression list but rather as seperate variables will make simplification of term combining easier (ie, combining two terms that share common demoniators) as parsing the expression list won't be required. It feels like one of those things that'll come back to bite later down the line though, or at the very least not straightforward.
-        self.terms = [term]
-
-    def addTerm(self, term, operator):
-        self.terms.append(term)
-
 class tokeniser:
     def __init__(self,equation):
         self.equation = equation.replace(' ', '')
-        self.bracketPairs = 0
         self.length = len(self.equation)
         self.inNumber = False
+        self.bracketStack = stack()
         self.number = []
 
     def getChar(self, char): #helper function to contain all the special case characters that need to alter counters etc
         if char == '(':
-            self.bracketPairs+=1
+            self.bracketStack.push(char)
             return '('
         elif char == ')':
-            self.bracketPairs-=1
-            return ')'
+            if self.bracketStack.pop() is None:
+                print('syntax error: brackets')
+                return None
+            else:
+                return ')'
         else:
             return char
 
@@ -111,63 +77,69 @@ class tokeniser:
             if c == self.length: #I wish python had null terminators..
                 if self.inNumber:
                     yield ''.join(self.number)
-                if self.bracketPairs > 0:
-                    yield ')'
+                if not self.bracketStack.isEmpty():
+                    print('syntax error: brackets')
+                    yield None
 
 def infixToPostFix(equation): 
     precedence = {'-': 1, '+': 1, '*': 2, '/': 2, '^': 3} #I don't understand why it's this and not BIDMAS but it works 
     postFix = []
-    stack = operandStack()
+    opStack = stack()
     for char in tokeniser(equation).tokens():
+        if char is None:
+            return None
         if char.isdigit() or char.isalpha(): #is operand
                postFix.append(char)
         elif char == '(':
-            stack.push(char)
+            opStack.push(char)
         elif char == ')':
-            op = stack.pop()
+            op = opStack.pop()
             postFix.append(op)
-            while  stack.peek() != '(':
-                op = stack.pop()
+            while  opStack.peek() != '(':
+                op = opStack.pop()
                 postFix.append(op)
-            stack.pop()
-        elif stack.isEmpty() or stack.peek() == '(' or precedence[stack.peek()] < precedence[char]:
-            stack.push(char) 
-        elif stack.peek() != '(' and precedence[stack.peek()] >= precedence[char]:
-            op = stack.pop()
+            opStack.pop()
+        elif opStack.isEmpty() or opStack.peek() == '(' or precedence[opStack.peek()] < precedence[char]:
+            opStack.push(char) 
+        elif opStack.peek() != '(' and precedence[opStack.peek()] >= precedence[char]:
+            op = opStack.pop()
             postFix.append(op)
-            while not stack.isEmpty() and stack.peek() != '(' and  precedence[op] >= precedence[char]: 
-                op = stack.pop()
+            while not opStack.isEmpty() and opStack.peek() != '(' and  precedence[op] >= precedence[char]: 
+                op = opStack.pop()
                 postFix.append(op)
             if op != '(':
-                stack.push(char)  
-    while not stack.isEmpty():
-        postFix.append(stack.pop())
+                opStack.push(char)  
+    while not opStack.isEmpty():
+        postFix.append(opStack.pop())
 
     return postFix
 
 def treeBuilder(postFixEquation):
-    stack = operandStack()
+    opStack = stack()
 
     for token in postFixEquation:
         if token.isdigit():
-            stack.push(Node(token))
+            opStack.push(Node(token))
 
         elif token.isalpha():
-            stack.push(Node(symbols(token)))
+            opStack.push(Node(symbols(token)))
 
         else:
             parent = Node(token)
             
-            terms = [stack.pop(), stack.pop()]
+            terms = [opStack.pop(), opStack.pop()]
+            if None in terms:
+                print('syntax error')
+                return 1 
 
             for c, term in enumerate(terms): #create node instances for lone numbers/variables
                 terms[c].parent = parent
 
             parent.right = terms[0] #term being acted on goes on the right
             parent.left = terms[1]
-            stack.push(parent)
+            opStack.push(parent)
 
-    return stack.pop() #stack should be collasped down to one root node
+    return opStack.pop() #stack should be collasped down to one root node
 
 def printTree(root):
   thislevel = [root]
@@ -249,8 +221,9 @@ class evaluator:
         return left**right
 
 if __name__ == '__main__':
-    equation = "a+b*(c^d-e)^(f+g*h)-i"
+    equation = "a+b*(c^d-e)^(f+g*h)-i-a"
     postFixEquation = infixToPostFix(equation)
-    tree = treeBuilder(postFixEquation)
-    evaluator(tree)
-    print(tree.key)
+    if postFixEquation is not None:
+        tree = treeBuilder(postFixEquation)
+        evaluator(tree)
+        print(tree.key)
